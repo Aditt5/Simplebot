@@ -99,12 +99,12 @@ global.subdomain = {
 
 // Message Command 
 global.mess = {
-	owner: "* *Akses Ditolak*\nFitur ini hanya untuk owner bot!",
-	admin: "* *Akses Ditolak*\nFitur ini hanya untuk admin grup!",
+	owner: "* *Akses Ditolak*\nFitur ini hanya untuk Aditt!",
+	admin: "* *Akses Ditolak*\nFitur ini hanya untuk Aditt!",
 	botAdmin: "* *Akses Ditolak*\nFitur ini hanya untuk ketika bot menjadi admin!",
 	group: "* *Akses Ditolak*\nFitur ini hanya untuk dalam grup!",
 	private: "* *Akses Ditolak*\nFitur ini hanya untuk dalam private chat!",
-	prem: "* *Akses Ditolak*\nFitur ini hanya untuk user premium!",
+	prem: "* *Akses Ditolak*\nFitur ini hanya untuk Aditt!",
 	wait: 'Loading...',
 	error: 'Error!',
 	done: 'Done'
