@@ -739,54 +739,6 @@ break
 
 //================================================================================
 
-case "qc": {
-if (!text) return m.reply(example('teksnya'))
-let warna = ["#000000", "#ff2414", "#22b4f2", "#eb13f2"]
-var ppuser
-try {
-ppuser = await FardanDev.profilePictureUrl(m.sender, 'image')
-} catch (err) {
-ppuser = 'https://telegra.ph/file/a059a6a734ed202c879d3.jpg'
-}
-const json = {
-  "type": "quote",
-  "format": "png",
-  "backgroundColor": "#000000",
-  "width": 812,
-  "height": 968,
-  "scale": 2,
-  "messages": [
-    {
-      "entities": [],
-      "avatar": true,
-      "from": {
-        "id": 1,
-        "name": m.pushName,
-        "photo": {
-          "url": ppuser
-        }
-      },
-      "text": text,
-      "replyMessage": {}
-    }
-  ]
-};
-        const response = axios.post('https://bot.lyo.su/quote/generate', json, {
-        headers: {'Content-Type': 'application/json'}
-}).then(async (res) => {
-    const buffer = Buffer.from(res.data.result.image, 'base64')
-    let tempnya = "./database/sampah/"+m.sender+".png"
-await fs.writeFile(tempnya, buffer, async (err) => {
-if (err) return m.reply("Error")
-await FardanDev.sendAsSticker(m.chat, tempnya, m, {packname: global.packname})
-await fs.unlinkSync(`${tempnya}`)
-})
-})
-}
-break
-
-//================================================================================
-
 case "s": case "sticker": case "stiker": {
 if (!/image|video/gi.test(mime)) return m.reply(example("dengan kirim media"))
 if (/video/gi.test(mime) && qmsg.seconds > 15) return m.reply("Durasi vidio maksimal 15 detik!")
@@ -825,7 +777,7 @@ if (!msg[type].viewOnce) return m.reply("Pesan itu bukan viewonce!")
     } else if (/image/.test(type)) {
         return FardanDev.sendMessage(m.chat, {image: buffer, caption: msg[type].caption || ""}, {quoted: m})
     } else if (/audio/.test(type)) {
-        return FardanDev.sendMessage(m.chat, {audio: buffer, mimetype: "audio/mpeg", ptt: true}, {quoted: m})
+        return FardanDev.sendMessage(m.chat, {audio: buffer, mimetype: "audio/mpeg", ptt: true})
     } 
 }
 break
@@ -967,7 +919,7 @@ break
 
 case "tagall": {
 if (!m.isGroup) return Reply(mess.group)
-if (!isCreator && !m.isAdmin) return Reply(mess.admin)
+if (!isCreator && !m.isAdmin && !isPremium) return Reply(mess.admin)
 if (!text) return m.reply(example("pesannya"))
 let teks = text+"\n\n"
 let member = await m.metadata.participants.map(v => v.id).filter(e => e !== botNumber && e !== m.sender)
@@ -993,12 +945,24 @@ break
 
 //================================================================================
 
-case "ht": case "hidetag": case "h": {
+case "ht": case "h": case "hidetag": case "z": {
 if (!m.isGroup) return Reply(mess.group)
-if (!isCreator && !m.isAdmin) return Reply(mess.admin)
-if (!text) return m.reply(example("pesannya"))
+if (!isCreator && !m.isAdmin && !isPremium) return Reply(mess.admin)
+if (!text) return m.reply(example("teksnya"))
 let member = m.metadata.participants.map(v => v.id)
-await FardanDev.sendMessage(m.chat, {text: text, mentions: [...member]}, {quoted: m})
+await FardanDev.sendMessage(m.chat, {text: text, mentions: [...member]})
+}
+break
+
+//================================================================================
+
+case "tag": {
+if (!m.isGroup) return Reply(mess.group)
+if (!isCreator && !m.isAdmin && !isPremium) return Reply(mess.admin)
+if (!m.quoted) return m.reply(example("reply pesannya"))
+let text = m.quoted ? m.quoted.text : text
+let member = m.metadata.participants.map(v => v.id)
+await FardanDev.sendMessage(m.chat, {forward: m.quoted.fakeObj, mentions: [...member]})
 }
 break
 
@@ -3193,6 +3157,21 @@ break
 
 //================================================================================
 
+case "gopay": {
+if (!isCreator) return
+let teks = `
+*PAYMENT GOPAY Aditt*
+
+* *Nomor :* ${global.gopay}
+
+*[ ! ] Penting :* \`\`\`Wajib kirimkan bukti transfer demi keamanan bersama\`\`\`
+`
+await FardanDev.sendMessage(m.chat, {text: teks}, {quoted: qtoko})
+}
+break
+
+//================================================================================
+
 case "dana": {
 if (!isCreator) return
 let teks = `
@@ -3208,7 +3187,7 @@ break
 
 //================================================================================
 
-case "qris": {
+case "qris": case "qr": {
 if (!isCreator) return 
 await FardanDev.sendMessage(m.chat, {image: {url: global.qris}, caption: "\n*PAYMENT QRIS Aditt*\n\n*[ ! ] Penting :* \`\`\`Wajib kirimkan bukti transfer demi keamanan bersama\`\`\`"}, {quoted: qtoko})
 }
@@ -3523,12 +3502,6 @@ await m.reply(evaled)
 } catch (err) {
 await m.reply(String(err))
 }}
-
-//================================================================================
-
-if (m.text.toLowerCase() == "bot") {
-m.reply("Bot Online ✅")
-}
 
 //================================================================================
 
